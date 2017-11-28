@@ -205,9 +205,9 @@ class JEventsHelper
 
 			}
 
-			//Support Info
+			// Support Info
 			JevAdminJHtmlSidebar::addEntry(JText::_('SUPPORT_INFO'), 'index.php?option=com_jevents&task=cpanel.support', $vName === 'cpanel.support', 'jevents', 'fa-support', 0, 7, 0);
-			//Custom CSS
+			// Custom CSS
 			JevAdminJHtmlSidebar::addEntry(JText::_('JEV_CUSTOM_CSS'), 'index.php?option=com_jevents&view=customcss', $vName === 'customcss', 'jevents', 'fa-css3', 0, 8, 0);
 
 			// Lets do a single query and get an array of the addons! Wheyyy // Also make sure they are enabled!
@@ -234,7 +234,8 @@ class JEventsHelper
 				JevAdminJHtmlSidebar::addEntry(JText::_('JEV_ADMIN_LOCATIONS_OVERVIEW'), 'index.php?option=com_jevlocations&task=locations.overview', $vName === 'locations.overview', 'jevlocations', 'fa-map-marker', 0, 0, 9);
 				JevAdminJHtmlSidebar::addEntry(JText::_('JEV_ADMIN_LOCATIONS_ADD_LOCATION'), 'index.php?option=com_jevlocations&task=locations.edit', $vName === 'locations.edit', 'jevlocations', 'fa-edit', 0, 0, 9);
 				JevAdminJHtmlSidebar::addEntry(JText::_('JEV_CATEGORIES'), 'index.php?option=com_jevlocations', $vName === 'cpanel.cpanel', 'jevlocations', 'fa-folder', 0, 0, 9);
-				JevAdminJHtmlSidebar::addEntry(JText::_('JEV_INSTALL_CONFIG'), 'index.php?option=com_jevlocations&task=params.edit', $vName === 'params.edit', 'jevlocations', 'fa-cogs', 0, 0, 9);
+				// Config page not yet supported. Remove it.
+				// JevAdminJHtmlSidebar::addEntry(JText::_('JEV_INSTALL_CONFIG'), 'index.php?option=com_jevlocations&task=params.edit', $vName === 'params.edit', 'jevlocations', 'fa-cogs', 0, 0, 9);
 			}
 
 			// Managed People
