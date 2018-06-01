@@ -70,7 +70,7 @@ class GetjsonController extends JControllerLegacy
 			$eventArray = array();
 			$eventArray['title'] = $event->title();
 			$eventArray['start'] = $event->yup() . "-" . $event->mup() . "-" . $event->dup() . " " . date("H:i", $event->getUnixStartTime());
-			$eventArray['end'] = $event->yup() . "-" . $event->mup() . "-" . $event->dup() . " " . date("H:i", $event->getUnixStartTime());
+			$eventArray['end'] = $event->yup() . "-" . $event->mup() . "-" . $event->dup() . " " . date("H:i", $event->getUnixEndTime());
 			$eventArray['textcolor'] = $event->fgcolor();
 			$eventArray['backgroundColor'] = $event->bgcolor();
 			$link = $event->viewDetailLink($event->yup(), $event->mup(), $event->dup(), false, $myItemid);
@@ -104,13 +104,13 @@ class GetjsonController extends JControllerLegacy
 	function eventRangeData()
 	{
 		$app    = JFactory::getApplication();
-		$jinput = $app->input;
+		$input = $app->input;
 
 		$this->datamodel = new JEventsDataModel();
 
 		list($year, $month, $day) = JEVHelper::getYMD();
-		$start  = $jinput->getString('start', "$year-$month-$day");
-		$end    = $jinput->getString('end', "$year-$month-$day");
+		$start  = $input->getString('start', "$year-$month-$day");
+		$end    = $input->getString('end', "$year-$month-$day");
 		$limitstart = 0;
 		$limit  = 0;
 
@@ -136,10 +136,12 @@ class GetjsonController extends JControllerLegacy
 		{
 			$eventArray = array();
 			$eventArray['title'] = $event->title();
-			$eventArray['start'] = $event->yup() . "-" . $event->mup() . "-" . $event->dup() . " " . date("H:i", $event->getUnixStartTime());
-			$eventArray['end'] = $event->yup() . "-" . $event->mup() . "-" . $event->dup() . " " . date("H:i", $event->getUnixStartTime());
-			$eventArray['textcolor'] = $event->fgcolor();
-			$eventArray['backgroundColor'] = $event->bgcolor();
+			// TODO get the UNIX start/end time to be formatted as below
+			$eventArray['start'] = $event->yup() . "-" . $event->mup() . "-" . $event->dup() . "T" . date("H:i:s", $event->getUnixStartTime()) . '+00:00';
+			$eventArray['end'] = $event->ydn() . "-" . $event->mdn() . "-" . $event->ddn() . "T" . date("H:i:s", $event->getUnixEndTime()) . '+00:00';
+			// TODO make event colouring conditional
+			//$eventArray['textcolor'] = $event->fgcolor();
+			//$eventArray['backgroundColor'] = $event->bgcolor();
 			$link = $event->viewDetailLink($event->yup(), $event->mup(), $event->dup(), false, $myItemid);
 			$eventArray['url'] = JRoute::_($link . $this->datamodel->getCatidsOutLink());
 
@@ -167,7 +169,10 @@ class GetjsonController extends JControllerLegacy
 	
 	function monthEvents()
 	{
-		$modid = intval((JRequest::getVar('modid', 0)));
+		$app    = JFactory::getApplication();
+		$input  = $app->input;
+
+		$modid  = (int) $input->getInt('modid', 0);
 
 		$user = JFactory::getUser();
 		$query = "SELECT id, params"
@@ -177,8 +182,10 @@ class GetjsonController extends JControllerLegacy
 				. "\n AND m.access IN (" . JEVHelper::getAid($user, 'string') . ")"
 				. "\n AND m.client_id != 1";
 		$db = JFactory::getDbo();
+
 		$db->setQuery($query);
 		$modules = $db->loadObjectList();
+
 		if (count($modules) <= 0)
 		{
 			if (!$modid <= 0)
@@ -186,6 +193,7 @@ class GetjsonController extends JControllerLegacy
 				return new JResponseJson(array());
 			}
 		}
+
 		$params = new JRegistry(isset($modules[0]->params)?$modules[0]->params:null);
 
 		$reg = JFactory::getConfig();
@@ -194,8 +202,8 @@ class GetjsonController extends JControllerLegacy
 		$this->datamodel = new JEventsDataModel();
 		$myItemid = $this->datamodel->setupModuleCatids($params);
 
-		$year = JRequest::getVar('jev_current_year', 0);
-		$month = JRequest::getVar('jev_current_month', 0);
+		$year   = $input->get('jev_current_year', 0);
+		$month  = $input->get('jev_current_month', 0);
 
 		if ($year == 0)
 		{
